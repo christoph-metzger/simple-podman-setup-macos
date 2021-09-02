@@ -1,0 +1,48 @@
+= simple-podman-setup-macos
+
+== Was wird benötigt?
+
+Während des Setups werden installiert:
+
+- Virtualbox
+- Vagrant
+- Podman
+
+== Installation
+
+Installation:
+[source,bash]
+----
+$ ./setup.sh
+----
+
+Vagrant starten:
+[source,bash]
+----
+$ pman up
+----
+
+Podman nutzen:
+[source,bash]
+----
+$ podman info
+$ podman run --rm -it docker.io/wernight/funbox asciiquarium
+----
+
+== Probleme die beim Setup auftreten können
+
+=== Problem beim erstmaligen Starten der VM mit Vagrant
+
+* Kommt es beim Starten der VM zu einem Fehler, dann muss kann es sein, dass
+* https://www.howtogeek.com/658047/how-to-fix-virtualboxs-%E2%80%9Ckernel-driver-not-installed-rc-1908-error/
+[source,bash]
+----
+$ podman info
+Error: failed to create sshClient: dial unix /Users/christoph/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh: connect: connection refused
+----
+
+–&gt; `eval &quot;$(ssh-agent -s)&quot;` (https://www.redhat.com/sysadmin/podman-clients-macos-windows)
+
+== Danke
+
+Vielen Dank an Dave Meurer, dessen Blogpost https://www.redhat.com/sysadmin/replace-docker-podman-macos[How to replace Docker with Podman on a Mac] als Grundlage zu dieser Skriptsammlung geführt hat.

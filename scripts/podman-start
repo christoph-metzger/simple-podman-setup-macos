@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export VAGRANT_CWD=__VAR__TOOLS__DIR__
+
+echo "Starting podman"
+vagrant up
