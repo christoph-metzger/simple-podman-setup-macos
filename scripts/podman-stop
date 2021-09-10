@@ -1,6 +1,57 @@
 #!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
 
 export VAGRANT_CWD=__VAR__TOOLS__DIR__
 
-echo "Stopping podman"
-vagrant halt
+vagrantCommand="vagrant halt"
+
+script_dir=
+script_dir=$(dirname -- "$(readlink -e "${BASH_SOURCE[0]}" || realpath "${BASH_SOURCE[0]}")")
+source "$script_dir/mountpoint-handler.sh"
+
+
+main() {
+  read_parameters "$@"
+  read_podman_working_dir
+
+  echo "Stopping podman"
+  eval "$vagrantCommand"
+}
+
+show_help() {
+  cat << EOF
+  Usage: $(basename "$0") <options>
+      -h, --help        Display help
+      -v, --verbose     Display verbose output
+      -d, --destroy     Runs 'vagrant destroy' (default is 'vagrant halt')
+EOF
+}
+
+read_parameters() {
+  while :; do
+    case "${1:-}" in
+      -h|--help)
+        show_help
+        exit
+        ;;
+      -v|--verbose)
+        set -x
+        ;;
+      -d|--destroy)
+        vagrantCommand="vagrant destroy -f"
+        ;;
+      *)
+        if [[ "$*" != "" ]]; then
+          vagrantCommand="$vagrantCommand $*"
+        fi
+        break
+        ;;
+    esac
+
+    shift
+  done
+}
+
+main "$@"
