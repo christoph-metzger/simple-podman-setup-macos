@@ -5,6 +5,13 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
   end
 
+  podmanWorkingDir=ENV['PODMAN_WORKING_DIR']
+  if podmanWorkingDir != nil && podmanWorkingDir != ""
+    config.vm.synced_folder podmanWorkingDir, podmanWorkingDir,
+      owner: "root",
+      group: "root"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     yum install -y podman
 

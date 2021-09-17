@@ -1,6 +1,65 @@
 #!/bin/bash
+set -o errexit
+set -o nounset
+set -o pipefail
 
 export VAGRANT_CWD=__VAR__TOOLS__DIR__
 
-echo "Starting podman"
-vagrant up
+vagrantCommand="vagrant up"
+
+script_dir=
+script_dir=$(dirname -- "$(readlink -e "${BASH_SOURCE[0]}" || realpath "${BASH_SOURCE[0]}")")
+source "$script_dir/mountpoint-handler.sh"
+
+main() {
+  read_parameters "$@"
+
+  echo "Starting podman"
+  eval "$vagrantCommand"
+}
+
+show_help() {
+  cat << EOF
+  Usage: $(basename "$0") <options>
+      -h, --help                  Display help
+      -v, --verbose               Display verbose output
+      -c, --current-working-dir   Mount the current working directory
+      -d, --directory             Mount a custom directory
+EOF
+}
+
+read_parameters() {
+  while :; do
+    case "${1:-}" in
+      -h|--help)
+        show_help
+        exit
+        ;;
+      -v|--verbose)
+        set -x
+        ;;
+      -c|--current-working-dir)
+        set_podman_working_dir "$(pwd)"
+        ;;
+      -d|--directory)
+        if [[ -n "${2:-}" ]]; then
+          set_podman_working_dir "$2"
+          shift
+        else
+          echo "ERROR: parameter '-d|--directory' cannot be empty." >&2
+          exit 1
+        fi
+        ;;
+      *)
+        if [[ "$*" != "" ]]; then
+          vagrantCommand="$vagrantCommand $*"
+        fi
+        break
+        ;;
+    esac
+
+    shift
+  done
+}
+
+main "$@"
