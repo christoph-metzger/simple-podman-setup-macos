@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "fedora/34-cloud-base"
-
+  config.vm.network "private_network", ip: "10.0.0.42"
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
   end
