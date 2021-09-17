@@ -17,7 +17,7 @@ main() {
   read_podman_working_dir
 
   echo "Stopping podman"
-  eval "$vagrantCommand"
+  eval "$vagrantCommand" && remove_mount_file
 }
 
 show_help() {
